@@ -9,6 +9,8 @@ import traceback
 from .models import *
 from .serializers import *
 
+from django.core.paginator import Paginator
+
 from datetime import datetime
 
 
@@ -32,9 +34,13 @@ def index(request, following=False, message=None, error=None):
             'likes_count': likes
         })
 
+    page_number = request.GET.get('page', 2)
+    paginator = Paginator(ui_data, 7)
+    rows = paginator.get_page(page_number)
+
     # #UI Params
     params = {
-        'rows': ui_data,
+        'rows': rows,
         'message': message,
         'error': error
     }

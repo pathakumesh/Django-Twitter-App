@@ -10,6 +10,8 @@
 	    <div><font color="red">{{ error }}</font></div>
 	    <br>
 	{% endif %}    
+    {% block pagination %}
+    {% endblock %}    
     {% for row in rows %}
     	<label>Text: </label> {{row.post_text}}
     	<br>
@@ -21,6 +23,23 @@
     	<br>
     	<br>
     {% endfor %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if rows.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ rows.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                &nbsp(Page {{ rows.number }} of {{ rows.paginator.num_pages }})
+            </span>
+
+            {% if rows.has_next %}
+                <a href="?page={{ rows.next_page_number }}">next</a>
+                <a href="?page={{ rows.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 
 
 {% endblock %}
