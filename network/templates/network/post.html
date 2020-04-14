@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+	{% if post %}
+    	<h3>Edit Post</h3>
+    	<form action="{% url 'edit_post' post_id=post.id %}" method="post">
+    {% else %}
+    	<h3>Create Post</h3>
+    	<form action="{% url 'create_post' %}" method="post">
+    {% endif %}
+
+    	{% csrf_token %}
+        <div class="form-group">
+        	{% if post %}
+            	<input class="form-control" type="text" name="post_text" value="{{post.text}}">
+           	{% else %}
+           		<input class="form-control" type="text" name="post_text" placeholder="Post Content">
+           	{% endif %}
+        </div>
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+
+{% endblock %}

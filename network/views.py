@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 import traceback
@@ -93,7 +93,23 @@ def create_post(request):
         # Return to home page
         message = "Successfully created a new post."
         return index(request, message=message)
-    return render(request, "network/create_post.html")
+    return render(request, "network/post.html")
+
+
+@login_required
+def edit_post(request, post_id):
+    try:
+        post = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+    if request.method == "POST":
+        # Save post
+        post.text = request.POST['post_text']
+        post.save()
+        # Return to home page
+        message = "Successfully edited the post."
+        return index(request, message=message)
+    return render(request, "network/post.html", {'post': post})
 
 
 @login_required
@@ -104,6 +120,7 @@ def my_posts(request):
     for post in posts:
         likes = Likes.objects.filter(post=post).count()
         ui_data.append({
+            'post_id': post.id,
             'post_text': post.text,
             'posted_at': post.created_at,
             'likes_count': likes
