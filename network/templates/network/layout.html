@@ -19,10 +19,13 @@
                         <a class="nav-link" href="{% url 'user_info' user_id=user.id%}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li>
                 {% if user.is_authenticated %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'my_posts' %}">My Posts</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'create_post' %}">New Post</a>
                     </li>

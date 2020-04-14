@@ -2,26 +2,28 @@
 
 {% block body %}
 
-	{% if message %}
-	        <div><font color="green">{{ message }}</font></div>
-	        <br>
-	{% endif %}
-	{% if error %}
-	    <div><font color="red">{{ error }}</font></div>
-	    <br>
-	{% endif %}    
+    {% if message %}
+            <div><font color="green">{{ message }}</font></div>
+            <br>
+    {% endif %}
+    {% if error %}
+        <div><font color="red">{{ error }}</font></div>
+        <br>
+    {% endif %}    
     {% block pagination %}
     {% endblock %}    
     {% for row in rows %}
-    	<label>Text: </label> {{row.post_text}}
-    	<br>
-    	<label>Posted By: </label> {{row.posted_by}}
-    	<br>
-    	<label>Posted At: </label> {{row.posted_at}}
-    	<br>
-    	<label>Likes: </label> {{row.likes_count}}
-    	<br>
-    	<br>
+        <label>Text: </label> {{row.post_text}}
+        <br>
+        {% if not my_posts%}
+            <label>Posted By: </label> {{row.posted_by}}
+            <br>
+        {% endif %}    
+        <label>Posted At: </label> {{row.posted_at}}
+        <br>
+        <label>Likes: </label> {{row.likes_count}}
+        <br>
+        <br>
     {% endfor %}
     <div class="pagination">
         <span class="step-links">

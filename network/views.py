@@ -13,6 +13,7 @@ from django.core.paginator import Paginator
 
 from datetime import datetime
 
+MAX_ITEMS_PER_PAGE = 7
 
 @login_required
 def index(request, following=False, message=None, error=None):
@@ -35,12 +36,12 @@ def index(request, following=False, message=None, error=None):
         })
 
     page_number = request.GET.get('page', 2)
-    paginator = Paginator(ui_data, 7)
+    paginator = Paginator(ui_data, MAX_ITEMS_PER_PAGE)
     rows = paginator.get_page(page_number)
 
     # #UI Params
     params = {
-        'rows': rows,
+        'rows': ui_data,
         'message': message,
         'error': error
     }
@@ -93,6 +94,35 @@ def create_post(request):
         message = "Successfully created a new post."
         return index(request, message=message)
     return render(request, "network/create_post.html")
+
+
+@login_required
+def my_posts(request):
+    posts = Post.objects.filter(user=request.user)
+    # #Prepare UI data
+    ui_data = list()
+    for post in posts:
+        likes = Likes.objects.filter(post=post).count()
+        ui_data.append({
+            'post_text': post.text,
+            'posted_at': post.created_at,
+            'likes_count': likes
+        })
+
+    page_number = request.GET.get('page', 2)
+    paginator = Paginator(ui_data, MAX_ITEMS_PER_PAGE)
+    rows = paginator.get_page(page_number)
+
+    # #UI Params
+    params = {
+        'rows': rows,
+        'my_posts': True
+    }
+    return render(
+        request,
+        "network/index.html",
+        params
+    )
 
 
 @login_required
