@@ -30,7 +30,7 @@
     <label>Posted At: </label> {{post.posted_at}}
     <br>
     <label>Likes: </label> {{post.likes_count}}
-    {% if not action %}
+    {% if allow_edit %}
     	<a href="{% url 'edit_post' post_id=post.post_id %}" >EDIT</a>
     {% endif %}
     <br>

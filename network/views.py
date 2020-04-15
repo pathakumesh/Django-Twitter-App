@@ -99,9 +99,13 @@ def user_info(request, user_id):
     If target user is not session user,
     find out if this session session has followed this target user,
     if no, should be allowed to follow else should be allowed to unfollow
+
+    Also, if target user is not the session user, don't allow post edit
     """
     action = None
+    allow_edit = True
     if not target_user == request.user:
+        allow_edit = False
         try:
             followed = UserFollowing.objects.get(
                 user_id=request.user.id, following_user_id=user_id)
@@ -115,7 +119,8 @@ def user_info(request, user_id):
         'following_count': following_count,
         'followers_count': followers_count,
         'posts': posts,
-        'action': action
+        'action': action,
+        'allow_edit': allow_edit
     }
     return render(request, "network/user_info.html", params)
 
