@@ -5,7 +5,6 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-import traceback
 from .models import *
 from .serializers import *
 
@@ -65,7 +64,6 @@ def user_info(request, user_id):
     following_count = target_user.following.count()
     followers_count = target_user.followers.count()
     posts = Post.objects.filter(user=target_user)
-    print(UserFollowing.objects.all())
     post_data = list()
     for post in posts:
         likes = Likes.objects.filter(post=post).count()
@@ -280,7 +278,6 @@ def register(request):
             user = User.objects.create_user(username, email, password, dob=dob)
             user.save()
         except IntegrityError:
-            traceback.print_exc()
             return render(request, "network/register.html", {
                 "message": "Username already taken."
             })
