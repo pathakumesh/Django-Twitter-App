@@ -17,6 +17,7 @@ MAX_ITEMS_PER_PAGE = 10
 
 @login_required
 def index(request, following=False):
+    #  #Get all posts or following users posts
     if following:
         users_i_follow = [
             f.following_user_id for f in request.user.following.all()
@@ -28,12 +29,17 @@ def index(request, following=False):
     # #Prepare UI data
     post_data = list()
     for post in posts:
+        # #Get like count for this post
         likes = Likes.objects.filter(post=post).count()
+
+        # #Check if this post is already liked by me
         already_liked = Likes.objects.filter(
             post=post,
             user=request.user
         )
         react = 'Unlike' if already_liked else 'Like'
+
+        # #Update data
         post_data.append({
             'post_id': post.id,
             'post_text': post.text,
@@ -43,6 +49,7 @@ def index(request, following=False):
             'react': react
         })
 
+    # #Django Pagination
     page_number = request.GET.get('page', 1)
     paginator = Paginator(post_data, MAX_ITEMS_PER_PAGE)
     posts = paginator.get_page(page_number)
@@ -60,12 +67,21 @@ def index(request, following=False):
 
 @login_required
 def user_info(request, user_id):
+
+    # #Get user whose info is to be viewed
     target_user = User.objects.get(pk=user_id)
+
+    # #Get followers/followings count for this user
     following_count = target_user.following.count()
     followers_count = target_user.followers.count()
+
+    # #Get posts created by this user
     posts = Post.objects.filter(user=target_user)
+
+    # #Prepare UI data
     post_data = list()
     for post in posts:
+        # #Get like count for this post
         likes = Likes.objects.filter(post=post).count()
         post_data.append({
             'post_id': post.id,
@@ -73,6 +89,8 @@ def user_info(request, user_id):
             'posted_at': post.created_at,
             'likes_count': likes
         })
+
+    # #Django Pagination
     page_number = request.GET.get('page', 1)
     paginator = Paginator(post_data, MAX_ITEMS_PER_PAGE)
     posts = paginator.get_page(page_number)
@@ -104,10 +122,13 @@ def user_info(request, user_id):
 
 @login_required
 def follow(request, user_id):
+
+    # #Check if target user is session user
     if user_id == request.user.id:
         message = "ERROR: Cannot perform action on self"
         status = messages.ERROR
     else:
+        # #Get user which is to be followed
         target_user = User.objects.get(pk=user_id)
         try:
             # Create UserFollowing entry
@@ -126,10 +147,12 @@ def follow(request, user_id):
 
 @login_required
 def unfollow(request, user_id):
+    # #Check if target user is session user
     if user_id == request.user.id:
         message = "ERROR: Cannot perform action on self"
         status = messages.ERROR
     else:
+        # #Get user which is to be un-followed
         target_user = User.objects.get(pk=user_id)
         try:
             # Delete UserFollowing entry
@@ -149,7 +172,10 @@ def unfollow(request, user_id):
 
 @login_required
 def like(request, post_id):
+    # #Get post which is to be liked
     post = Post.objects.get(pk=post_id)
+
+    # #Check if this post is already liked by me (session-user)
     existing = Likes.objects.filter(
         post=post,
         user=request.user
@@ -171,7 +197,10 @@ def like(request, post_id):
 
 @login_required
 def unlike(request, post_id):
+    # #Get post which is to be un-liked
     post = Post.objects.get(pk=post_id)
+
+    # #Check if this post is already un-liked by me (session-user)
     existing = Likes.objects.filter(
         post=post,
         user=request.user
@@ -191,12 +220,12 @@ def unlike(request, post_id):
 @login_required
 def create_post(request):
     if request.method == "POST":
-        # Create post
+        # #Create post
         response = Post.objects.create(
             text=request.POST['post_text'],
             user=request.user
         )
-        # Return to home page
+        # #Return to home page
         message = "Successfully created a new post."
         messages.add_message(request, messages.SUCCESS, message)
         return redirect("index")
@@ -205,15 +234,18 @@ def create_post(request):
 
 @login_required
 def edit_post(request, post_id):
+    # #Get post and check if exists or not
     try:
         post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
+
     if request.method == "POST":
-        # Save post
+        # #Save post
         post.text = request.POST['post_text']
         post.save()
-        # Return to home page
+
+        # #Return to home page
         message = "Successfully edited the post."
         messages.add_message(request, messages.SUCCESS, message)
         return redirect("index")
@@ -222,7 +254,7 @@ def edit_post(request, post_id):
 
 @login_required
 def following_posts(request):
-    # Return to home page with following flag True
+    # #Return to home page with following flag True
     return index(request, following=True)
 
 
