@@ -42,4 +42,4 @@ class UserFollowing(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        f"{self.user_id} follows {self.following_user_id}"
+        return f"{self.user_id} follows {self.following_user_id}"

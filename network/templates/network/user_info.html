@@ -2,8 +2,25 @@
 
 {% block body %}
 
+{% if messages %}
+<ul class="messages">
+	{% for msg in messages%}
+	<li>
+		<div class="alert alert-{{msg.level_tag}}" role="alert">
+			{{msg.message}}
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
+
 <h5>User Information</h5>
-<h6>USER: {{user}}</h6>
+<h6>
+	USER: {{target_user}}
+	{% if action %}
+		<a href="{% url action.lower user_id=target_user.id%}" >{{action}}</a>
+	{% endif %}
+</h6>
 <h6>Users Following: {{following_count}}</h6>
 <h6>Followers: {{followers_count}}</h6>
 
@@ -13,7 +30,9 @@
     <label>Posted At: </label> {{post.posted_at}}
     <br>
     <label>Likes: </label> {{post.likes_count}}
-    <a href="{% url 'edit_post' post_id=post.post_id %}" >EDIT</a>
+    {% if not action %}
+    	<a href="{% url 'edit_post' post_id=post.post_id %}" >EDIT</a>
+    {% endif %}
     <br>
     <br>
 {% endfor %}

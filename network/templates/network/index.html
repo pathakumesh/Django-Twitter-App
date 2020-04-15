@@ -2,23 +2,29 @@
 
 {% block body %}
 
-    {% if message %}
-            <div><font color="green">{{ message }}</font></div>
-            <br>
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages%}
+        <li>
+            <div class="alert alert-{{msg.level_tag}}" role="alert">
+                {{msg.message}}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
     {% endif %}
-    {% if error %}
-        <div><font color="red">{{ error }}</font></div>
-        <br>
-    {% endif %}    
     {% for post in posts %}
         <label>Text: </label> {{post.post_text}}
         <br>
-        <label>Posted By: </label>{{post.posted_by}}
+        <label>Posted By: </label>
+        <a href="{% url 'user_info' user_id=post.posted_by.id%}">
+        {{post.posted_by}}
         </a>
         <br>
         <label>Posted At: </label> {{post.posted_at}}
         <br>
         <label>Likes: </label> {{post.likes_count}}
+        <a href="{% url post.react.lower post_id=post.post_id %}">{{post.react}}</a>
         <br>
         <br>
     {% endfor %}
