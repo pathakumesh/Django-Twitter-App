@@ -15,6 +15,7 @@ from datetime import datetime
 
 MAX_ITEMS_PER_PAGE = 7
 
+
 @login_required
 def index(request, following=False, message=None, error=None):
     if following:
@@ -25,23 +26,23 @@ def index(request, following=False, message=None, error=None):
         posts = Post.objects.all()
 
     # #Prepare UI data
-    ui_data = list()
+    post_data = list()
     for post in posts:
         likes = Likes.objects.filter(post=post).count()
-        ui_data.append({
+        post_data.append({
             'post_text': post.text,
             'posted_by': post.user,
             'posted_at': post.created_at,
             'likes_count': likes
         })
 
-    page_number = request.GET.get('page', 2)
-    paginator = Paginator(ui_data, MAX_ITEMS_PER_PAGE)
-    rows = paginator.get_page(page_number)
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(post_data, MAX_ITEMS_PER_PAGE)
+    posts = paginator.get_page(page_number)
 
     # #UI Params
     params = {
-        'rows': ui_data,
+        'posts': posts,
         'message': message,
         'error': error
     }
@@ -58,6 +59,18 @@ def user_info(request, user_id):
     following_users = user.following.count()
     followers = user.followers.count()
     posts = Post.objects.filter(user=user)
+    post_data = list()
+    for post in posts:
+        likes = Likes.objects.filter(post=post).count()
+        post_data.append({
+            'post_id': post.id,
+            'post_text': post.text,
+            'posted_at': post.created_at,
+            'likes_count': likes
+        })
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(post_data, MAX_ITEMS_PER_PAGE)
+    posts = paginator.get_page(page_number)
 
     """
     If clicked user is not session user,
@@ -75,10 +88,11 @@ def user_info(request, user_id):
     params = {
         'user': user,
         'following_count': following_users,
-        'follwers_count': followers,
+        'followers_count': followers,
         'posts': posts,
         'has_followed': has_followed
     }
+    print(params)
     return render(request, "network/user_info.html", params)
 
 
@@ -110,36 +124,6 @@ def edit_post(request, post_id):
         message = "Successfully edited the post."
         return index(request, message=message)
     return render(request, "network/post.html", {'post': post})
-
-
-@login_required
-def my_posts(request):
-    posts = Post.objects.filter(user=request.user)
-    # #Prepare UI data
-    ui_data = list()
-    for post in posts:
-        likes = Likes.objects.filter(post=post).count()
-        ui_data.append({
-            'post_id': post.id,
-            'post_text': post.text,
-            'posted_at': post.created_at,
-            'likes_count': likes
-        })
-
-    page_number = request.GET.get('page', 2)
-    paginator = Paginator(ui_data, MAX_ITEMS_PER_PAGE)
-    rows = paginator.get_page(page_number)
-
-    # #UI Params
-    params = {
-        'rows': rows,
-        'my_posts': True
-    }
-    return render(
-        request,
-        "network/index.html",
-        params
-    )
 
 
 @login_required
