@@ -1,52 +1,74 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 
-    {% if messages %}
-    <ul class="messages">
-        {% for msg in messages%}
-        <li>
-            <div class="alert alert-{{msg.level_tag}}" role="alert">
-                {{msg.message}}
+    <div class="container col-md-6 col-md-offset-3 centered-form center-block" onclick="clickHandler()">
+
+        {% if messages %}
+            <ul class="messages">
+                {% for msg in messages%}
+                    <li>
+                        <div class="alert alert-primary" role="alert">
+                            {{msg.message}}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        {% for post in posts %}
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="toprow">
+                            <a href="{% url 'user_info' user_id=post.posted_by.id%}" class="post-author">
+                                {{post.posted_by}}
+                            </a>
+
+                            <span class="post-date">
+                                · {{post.posted_at}}
+                            </span>
+                        </div>
+
+                        <div class="post-text">
+                            {{post.post_text}}
+                        </div>
+
+                    </div>
+                    <br>
+                    <span class="likes panel-body">                        
+                        <span id="{{ post.post_id }}" class="text-secondary"> {{post.likes_count}} </span> &nbsp;
+                        {% if post.react == "Unlike" %}
+                            <i class="fa fa-thumbs-up text-primary" data-buttonid="{{ post.post_id }}" data-buttonWork="unlike"></i>
+                        {% else %}
+                            <i class="far fa-thumbs-up text-secondary" data-buttonid="{{ post.post_id }}" data-buttonWork="like"></i>
+                        {% endif %}
+                    </span>
+                </div>
             </div>
-        </li>
         {% endfor %}
-    </ul>
-    {% endif %}
-    {% for post in posts %}
-        <label>Text: </label> {{post.post_text}}
-        <br>
-        <label>Posted By: </label>
-        <a href="{% url 'user_info' user_id=post.posted_by.id%}">
-        {{post.posted_by}}
-        </a>
-        <br>
-        <label>Posted At: </label> {{post.posted_at}}
-        <br>
-        <label>Likes: </label> {{post.likes_count}}
-        <a href="{% url post.react.lower post_id=post.post_id %}">{{post.react}}</a>
-        <br>
-        <br>
-    {% endfor %}
-    {% if posts.number %}
-        <div class="pagination">
-            <span class="step-links">
-                {% if posts.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ posts.previous_page_number }}">previous</a>
-                {% endif %}
 
-                <span class="current">
-                    &nbsp(Page {{ posts.number }} of {{ posts.paginator.num_pages }})
-                </span>
+        {% if posts.number %}
+            <ul class="pagination">
+                    {% if posts.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">previous</a></li>
+                    {% endif %}
 
-                {% if posts.has_next %}
-                    <a href="?page={{ posts.next_page_number }}">next</a>
-                    <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
-                {% endif %}
-            </span>
-        </div>
-    {% endif %}
+                    <span class="current" style="color: gray;">
+                        &nbsp;(Page {{ posts.number }} of {{ posts.paginator.num_pages }})&nbsp;
+                    </span>
 
+                    {% if posts.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}"> next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.paginator.num_pages }}">last &raquo;</a></li>
+                    {% endif %}
+            </ul>
+        {% endif %}
+
+        <script src="{% static 'network/likeUnlike.js' %}"></script>
+
+    </div>
 
 {% endblock %}
