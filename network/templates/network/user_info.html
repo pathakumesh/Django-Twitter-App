@@ -1,60 +1,97 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 
-{% if messages %}
-<ul class="messages">
-	{% for msg in messages%}
-	<li>
-		<div class="alert alert-{{msg.level_tag}}" role="alert">
-			{{msg.message}}
-		</div>
-	</li>
-	{% endfor %}
-</ul>
-{% endif %}
+    <div class="container col-md-6 col-md-offset-3 centered-form center-block background" onclick="clickHandler()">
 
-<h5>User Information</h5>
-<h6>
-	USER: {{target_user}}
-	{% if action %}
-		<a href="{% url action.lower user_id=target_user.id%}" >{{action}}</a>
-	{% endif %}
-</h6>
-<h6>Users Following: {{following_count}}</h6>
-<h6>Followers: {{followers_count}}</h6>
+        {% if messages %}
+            <ul class="messages">
+                {% for msg in messages%}
+                <li>
+                    <div class="alert alert-{{msg.level_tag}}" role="alert">
+                        {{msg.message}}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-{% for post in posts %}
-    <label>Text: </label> {{post.post_text}}
-    <br>
-    <label>Posted At: </label> {{post.posted_at}}
-    <br>
-    <label>Likes: </label> {{post.likes_count}}
-    {% if allow_edit %}
-    	<a href="{% url 'edit_post' post_id=post.post_id %}" >EDIT</a>
-    {% endif %}
-    <br>
-    <br>
-{% endfor %}
-{% if posts.number %}
-    <div class="pagination">
-        <span class="step-links">
-            {% if posts.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ posts.previous_page_number }}">previous</a>
-            {% endif %}
+        <h2>{{target_user}}</h2>
 
-            <span class="current">
-                &nbsp(Page {{ posts.number }} of {{ posts.paginator.num_pages }})
-            </span>
+        {% if action %}
+            {% if action == "Follow" %}
+                <button type="button" class="btn btn-outline-primary" id="follow"  data-userid="{{ target_user.id }}" data-buttonWork="follow" >{{action}}</button>
+            {% else %}
+                <button type="button" class="btn btn-dark" id="follow" data-userid="{{ target_user.id }}" data-buttonWork="unfollow">{{action}}</button>
+            {%  endif %}
+        {% endif %}
 
-            {% if posts.has_next %}
-                <a href="?page={{ posts.next_page_number }}">next</a>
-                <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
+        <span>{{following_count}}</span>
+        <span style="color: gray; margin-right: 80px;">Following </span>
+        <span id="{{ target_user.id }}">{{followers_count}}</span>
+        <span style="color: gray;">Followers </span>
+        <br><br>
+        <hr>
+
+        {% for post in posts %}
+            
+            <div class="row">
+                <div class="panel">                    
+                    <div class="toprow">
+                        <div class="post-author">
+                            {{post.posted_by}}
+                        </div>
+
+                        <span class="post-date">
+                             {{post.posted_at}}  
+                        </span>
+                    </div>    
+
+                    <div class="post-text">
+                        {{post.post_text}}
+                    </div>
+                    <br> 
+
+                    <span class="likes">
+                        <span id="{{ post.post_id }}" class="text-secondary"> {{post.likes_count}} </span> &nbsp;
+                        {% if post.react == "Unlike" %}
+                            <i class="fa fa-thumbs-up text-primary" data-buttonid="{{ post.post_id }}" data-buttonWork="unlike"></i>
+                        {% else %}
+                            <i class="far fa-thumbs-up text-secondary" data-buttonid="{{ post.post_id }}" data-buttonWork="like"></i>
+                        {% endif %}                    
+                    </span>      
+
+                    {% if allow_edit %}
+                        <a href="{% url 'edit_post' post_id=post.post_id %}" ><i class="far fa-edit"></i></a>
+                    {% endif %}    
+
+                </div>
+            </div>     
+
+        {% endfor %}
+
+        {% if posts.number %}
+            <ul class="pagination centered block">
+                {% if posts.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">previous</a></li>
+                {% endif %}
+
+                <span class="current" style="color: gray;">
+                    &nbsp;(Page {{ posts.number }} of {{ posts.paginator.num_pages }})&nbsp;
+                </span>
+
+                {% if posts.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}"> next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ posts.paginator.num_pages }}">last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+        </div>
     </div>
-{% endif %}
 
+    <script src="{% static 'network/follow.js' %}"></script>
+    <script src="{% static 'network/likeUnlike.js' %}"></script>
 
 {% endblock %}
