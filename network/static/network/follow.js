@@ -1,5 +1,9 @@
-document.getElementById("follow").addEventListener("click", toggleFollow)
+try{
+    document.getElementById("follow").addEventListener("click", toggleFollow)
+}
+catch(e){
 
+}
 
 function toggleFollow(e){
     
@@ -19,7 +23,7 @@ function toggleFollow(e){
         })
         .then(res=>{
             document.getElementById(id).innerText = res['followers_count']
-        })
+        }) 
     }
     
     if(target.getAttribute("data-buttonWork")=="unfollow"){

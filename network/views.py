@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -11,6 +12,7 @@ from .serializers import *
 from django.core.paginator import Paginator
 
 from datetime import datetime
+import json
 
 
 MAX_ITEMS_PER_PAGE = 10
@@ -261,20 +263,19 @@ def create_post(request):
 def edit_post(request, post_id):
     # #Get post and check if exists or not
 
+    print("hell")
     try:
         post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
     if request.method == "POST":
+        response = json.loads(request.body)
         # #Save post
-        post.text = request.POST['post_text']
+        post.text = response['post_text']
         post.save()
+        return JsonResponse({"edited_post": post.text}, status=200)
 
-        # #Return to home page
-        message = "Successfully edited the post."
-        messages.add_message(request, messages.SUCCESS, message)
-        return redirect("index")
     return render(request, "network/post.html", {'post': post})
 
 
