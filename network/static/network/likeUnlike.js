@@ -90,7 +90,7 @@ function clickHandler(e){
             target.style.display = "none"
             parent.querySelector("i.far.fa-edit.text-secondary").style.display = "inline-block"
         })
-        .catch(error=>console.log(error))
+        .catch(error=>{return error})
     }
 
 }
