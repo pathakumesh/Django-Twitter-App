@@ -7,7 +7,7 @@ class User(AbstractUser):
 
 
 class Post(models.Model):
-    text = models.CharField(max_length=100, blank=False)
+    text = models.TextField(blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

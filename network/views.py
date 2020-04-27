@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import *
-from .serializers import *
 
 from django.core.paginator import Paginator
 
@@ -70,9 +69,8 @@ def index(request, following=False):
 
 @login_required
 def user_info(request, user_id):
-    
     # #Get user whose info is to be viewed
-    target_user = User.objects.get(pk=user_id)    
+    target_user = User.objects.get(pk=user_id)
 
     # #Get followers/followings count for this user
     following_count = target_user.following.count()
@@ -82,12 +80,12 @@ def user_info(request, user_id):
     posts = Post.objects.filter(user=target_user)
 
     # #Prepare UI data
-    post_data = list()    
+    post_data = list()
     for post in posts:
         # #Get like count for this post
-        likes = Likes.objects.filter(post=post).count() 
+        likes = Likes.objects.filter(post=post).count()
 
-        # Check if this post is already liked by me
+        # #Check if this post is already liked by me
         already_liked = Likes.objects.filter(
             post=post,
             user=request.user
@@ -101,7 +99,6 @@ def user_info(request, user_id):
             'likes_count': likes,
             'react': react
         })
-        
 
     # #Django Pagination
     page_number = request.GET.get('page', 1)
@@ -159,7 +156,9 @@ def follow(request, user_id):
             message = "Followed user successfully"
             target_user = User.objects.get(pk=user_id)
             followers_count = target_user.followers.count()
-            return JsonResponse({"message": message, "followers_count":followers_count}, status=200)
+            return JsonResponse({
+                "message": message,
+                "followers_count": followers_count}, status=200)
         except IntegrityError:
             message = "ERROR: Already followed this user"
             status = messages.ERROR
@@ -185,12 +184,12 @@ def unfollow(request, user_id):
             target_user = User.objects.get(pk=user_id)
             followers_count = target_user.followers.count()
             message = "Unfollowed user successfully"
-            return JsonResponse({"message": message, "followers_count": followers_count}, status=200)
+            return JsonResponse({
+                "message": message,
+                "followers_count": followers_count}, status=200)
         except UserFollowing.DoesNotExist:
             message = "ERROR: User is not follower"
             return JsonResponse({"message": message}, status=400)
-        
-
 
 
 @login_required
@@ -216,7 +215,9 @@ def like(request, post_id):
         message = "Successfully liked post."
         status_code = 200
         likes_count = Likes.objects.filter(post=post).count()
-    return JsonResponse({"message": message, "likes_count": likes_count}, status=status_code)
+    return JsonResponse({
+        "message": message,
+        "likes_count": likes_count}, status=status_code)
 
 
 @login_required
@@ -233,15 +234,15 @@ def unlike(request, post_id):
         message = "Post not liked before"
         status_code = 400
         return JsonResponse({"message": message}, status=status_code)
-        
     else:
         existing.delete()
         message = "Successfully unliked post."
         status_code = 200
-        # post = Post.objects.get(pk=post_id)
+
         likes_count = Likes.objects.filter(post=post).count()
-        
-    return JsonResponse({"message": message, "likes_count": likes_count}, status=status_code)
+    return JsonResponse({
+        "message": message,
+        "likes_count": likes_count}, status=status_code)
 
 
 @login_required
