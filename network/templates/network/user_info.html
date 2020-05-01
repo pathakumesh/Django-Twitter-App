@@ -3,7 +3,7 @@
 
 {% block body %}
 
-    <div class="container col-md-6 col-md-offset-3 centered-form center-block background" onclick="clickHandler()">
+    <div class="container col-md-6 col-md-offset-3 centered-form center-block background" onclick="clickHandler(event)">
 
         {% if messages %}
             <ul class="messages">
@@ -27,6 +27,7 @@
             {%  endif %}
         {% endif %}
 
+
         <span>{{following_count}}</span>
         <span style="color: gray; margin-right: 80px;">Following </span>
         <span id="{{ target_user.id }}">{{followers_count}}</span>
@@ -49,7 +50,7 @@
                     </div>    
 
                     <div class="post-text">
-                        {{post.post_text}}
+                        <span style="white-space: pre-line">{{post.post_text}}</span>
                     </div>
                     <br> 
 
@@ -63,7 +64,8 @@
                     </span>      
 
                     {% if allow_edit %}
-                        <a href="{% url 'edit_post' post_id=post.post_id %}" ><i class="far fa-edit"></i></a>
+                        <i class="far fa-edit text-secondary"></i>
+                        <button class="save-btn btn btn-primary" data-id="{{ post.post_id }}"> Save </button>
                     {% endif %}    
 
                 </div>
@@ -90,8 +92,8 @@
         {% endif %}
         </div>
     </div>
-
     <script src="{% static 'network/follow.js' %}"></script>
+    {% csrf_token %}
     <script src="{% static 'network/likeUnlike.js' %}"></script>
 
 {% endblock %}

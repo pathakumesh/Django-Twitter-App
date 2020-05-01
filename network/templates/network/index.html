@@ -3,7 +3,7 @@
 
 {% block body %}
 
-    <div class="container col-md-6 col-md-offset-3 centered-form center-block" onclick="clickHandler()">
+    <div class="container col-md-6 col-md-offset-3 centered-form center-block" onclick="clickHandler(event)">
 
         {% if messages %}
             <ul class="messages">
@@ -32,7 +32,7 @@
                         </div>
 
                         <div class="post-text">
-                            {{post.post_text}}
+                            <span style="white-space: pre-line">{{post.post_text}}</span>
                         </div>
 
                     </div>

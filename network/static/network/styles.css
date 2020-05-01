@@ -18,24 +18,22 @@ body{
     padding-bottom: 10px;
     opacity: 100;
     background-color: white;
+    position: relative;
 }
 
 .row:hover{
-    /* background-color: rgb(20, 30, 30); */
     background-color: rgb(245, 245, 255);
 }
 
 .post-author{
     font-size: 1.5em;
     font-weight: 800;
-    /* color: rgb(43, 82, 255); */
 }
 
 .post-author:hover{
     font-size: 1.5em;
     font-weight: 800;
     color: none;
-    /* color: rgb(43, 82, 255); */
 }
 
 .post-date{
@@ -100,3 +98,23 @@ body{
     margin-bottom: 50px;
     margin: auto;
 }
+
+.save-btn{
+    right: 0;
+    margin-right: 10px;
+    bottom: 10px;
+    position: absolute;
+    font-size: 0.9em;
+    padding: 2px 4px  !important; 
+    display: none;
+}
+
+.editarea{
+    padding-left: 5px;
+    width: 600px;
+    background-color: rgb(245, 245, 255) !important;
+    color: black !important;
+    border: 1px solid #428bca;
+}
+
+
