@@ -264,7 +264,6 @@ def create_post(request):
 def edit_post(request, post_id):
     # #Get post and check if exists or not
 
-    print("hell")
     try:
         post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
